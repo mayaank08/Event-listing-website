@@ -1,13 +1,14 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ImageIcon } from "lucide-react";
 import { Event } from "@/data/events";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface EventCardProps {
   event: Event;
@@ -18,6 +19,7 @@ const EventCard = ({ event }: EventCardProps) => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
@@ -43,14 +45,26 @@ const EventCard = ({ event }: EventCardProps) => {
     }, 1000);
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
     <Card className="overflow-hidden transition-all hover:shadow-md">
-      <div className="relative h-48 overflow-hidden">
-        <img 
-          src={event.image} 
-          alt={event.title} 
-          className="object-cover w-full h-full transition-transform hover:scale-105"
-        />
+      <div className="relative h-48 overflow-hidden bg-muted">
+        {!imageError ? (
+          <img 
+            src={event.image} 
+            alt={event.title}
+            onError={handleImageError}
+            className="object-cover w-full h-full transition-transform hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-full bg-muted">
+            <ImageIcon className="w-12 h-12 text-muted-foreground opacity-50" />
+          </div>
+        )}
         <div className="absolute top-2 right-2 bg-accent text-white text-xs font-medium px-2 py-1 rounded">
           {event.category}
         </div>
